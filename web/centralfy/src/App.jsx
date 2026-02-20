@@ -5,6 +5,121 @@ import { useLocale } from './hooks/useLocale';
 import Swal from 'sweetalert2';
 import './App.css'
 
+const IS_BROWSER = true;
+
+const MOCK_LOCALE = {
+  ui: {
+    nav: { home: 'Home', search: 'Search', library: 'Library' },
+    sidebar: { createPlaylist: 'Create Playlist', likedSongs: 'Liked Songs' },
+    home: { greeting: 'Good evening 👋', recentlyPlayed: 'Recently Played', yourPlaylists: 'Your Playlists' },
+    search: {
+      placeholder: 'Search for songs...',
+      resultsTitle: 'Search Results',
+      searching: 'Searching...',
+      emptyMessage: 'No results found. Try a different search.',
+      unknownArtist: 'Unknown Artist',
+    },
+    library: { title: 'Your Library' },
+    liked: { title: 'Liked Songs', songCount: 'songs' },
+    player: { selectSong: 'Select a song', defaultArtist: 'Central' },
+    playlistView: { back: 'Back', playlistLabel: 'PLAYLIST', songCount: 'songs' },
+    modals: {
+      createPlaylist: {
+        title: 'Create Playlist',
+        nameLabel: 'Name',
+        namePlaceholder: 'My Playlist',
+        imageLabel: 'Cover Image URL',
+        imagePlaceholder: 'https://...',
+        createButton: 'Create',
+      },
+      editPlaylist: {
+        namePlaceholder: 'Playlist name',
+        imagePlaceholder: 'Image URL',
+        saveButton: 'Save',
+        cancelButton: 'Cancel',
+      },
+      addToPlaylist: { title: 'Add to Playlist' },
+      deletePlaylist: {
+        title: 'Delete Playlist?',
+        text: 'This action cannot be undone.',
+        confirmButton: 'Delete',
+        cancelButton: 'Cancel',
+        successTitle: 'Deleted!',
+        successText: 'Playlist has been deleted.',
+      },
+    },
+  },
+};
+
+const MOCK_PLAYLISTS = [
+  {
+    id: 1,
+    name: 'Chill Vibes',
+    url_img: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&q=80',
+    music_playlist: [
+      { id: 'yt_001', name: 'Lofi Hip Hop Mix', image_url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&q=80', author: 'ChilledCow' },
+      { id: 'yt_002', name: 'Sunset Drive', image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&q=80', author: 'Slowed Radio' },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Late Night',
+    url_img: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&q=80',
+    music_playlist: [
+      { id: 'yt_003', name: 'Midnight City', image_url: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=80&q=80', author: 'M83' },
+    ],
+  },
+];
+
+const MOCK_LIKED = [
+  { id: 'yt_001', name: 'Lofi Hip Hop Mix', image_url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&q=80', author: 'ChilledCow' },
+  { id: 'yt_004', name: 'Dreams', image_url: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=80&q=80', author: 'Fleetwood Mac' },
+  { id: 'yt_005', name: 'Blinding Lights', image_url: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=80&q=80', author: 'The Weeknd' },
+];
+
+const MOCK_HISTORY = [
+  { id: 'yt_005', name: 'Blinding Lights', image_url: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=80&q=80', author: 'The Weeknd' },
+  { id: 'yt_004', name: 'Dreams', image_url: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=80&q=80', author: 'Fleetwood Mac' },
+  { id: 'yt_001', name: 'Lofi Hip Hop Mix', image_url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=80&q=80', author: 'ChilledCow' },
+  { id: 'yt_002', name: 'Sunset Drive', image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&q=80', author: 'Slowed Radio' },
+  { id: 'yt_003', name: 'Midnight City', image_url: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=80&q=80', author: 'M83' },
+  { id: 'yt_006', name: 'Starboy', image_url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=80&q=80', author: 'The Weeknd' },
+];
+
+const MOCK_SEARCH_RESULTS = [
+  { _id: 'yt_007', name: 'Save Your Tears', image_url: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=80&q=80', author: 'The Weeknd' },
+  { _id: 'yt_008', name: 'Levitating', image_url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=80&q=80', author: 'Dua Lipa' },
+  { _id: 'yt_009', name: 'Peaches', image_url: 'https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=80&q=80', author: 'Justin Bieber' },
+  { _id: 'yt_010', name: 'Good 4 U', image_url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=80&q=80', author: 'Olivia Rodrigo' },
+  { _id: 'yt_011', name: 'Stay', image_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=80&q=80', author: 'The Kid LAROI' },
+];
+
+function injectMockData(action, payload = {}) {
+  window.dispatchEvent(new MessageEvent('message', { data: { action, ...payload } }));
+}
+
+function initBrowserMock() {
+  if (!IS_BROWSER) return;
+  setTimeout(() => injectMockData('setVisible', { data: true }), 100);
+  setTimeout(() => injectMockData('setLocale', { locale: MOCK_LOCALE }), 150);
+  setTimeout(() => injectMockData('resPlaylists', { playlist: JSON.stringify(MOCK_PLAYLISTS) }), 200);
+  setTimeout(() => injectMockData('resLikeList', { listLike: JSON.stringify(MOCK_LIKED) }), 250);
+  setTimeout(() => injectMockData('resHistory', { listLike: JSON.stringify(MOCK_HISTORY) }), 300);
+  setTimeout(() => {
+    injectMockData('musicUrlReceived', {
+      name: 'Blinding Lights',
+      url: 'mock_yt_005',
+      imageUrl: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=80&q=80',
+      author: 'The Weeknd',
+    });
+    injectMockData('footerLike', { value: true });
+    injectMockData('TimeVid', { played: 47, total: 200 });
+    injectMockData('changeMusicVolume', { volume: 20 });
+  }, 400);
+}
+
+initBrowserMock();
+
 const App = () => {
   const [visible, setVisible] = useState(false);
   const [currentTab, setCurrentTab] = useState('home');
@@ -38,6 +153,7 @@ const App = () => {
   const [loadingSongId, setLoadingSongId] = useState(null);
   const [localeData, setLocaleData] = useState(null);
   const t = useLocale(localeData);
+
   const renderMusicImage = (imageUrl, altText = 'Music') => {
     if (imageUrl && imageUrl.trim() !== '') {
       return (
@@ -122,11 +238,67 @@ const App = () => {
   }, []);
 
   const sendNUI = (action, data = {}) => {
+    // No browser, intercepta as ações e simula respostas do backend
+    if (IS_BROWSER) {
+      handleMockNUI(action, data);
+      return;
+    }
     fetch(`https://${GetParentResourceName()}/action`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, ...data })
     });
+  };
+
+  /** Simula as respostas do Lua/FiveM no browser */
+  const handleMockNUI = (action, data) => {
+    switch (action) {
+      case 'reqPlaylists':
+        setTimeout(() => injectMockData('resPlaylists', { playlist: JSON.stringify(MOCK_PLAYLISTS) }), 100);
+        break;
+      case 'reqLikeList':
+        setTimeout(() => injectMockData('resLikeList', { listLike: JSON.stringify(MOCK_LIKED) }), 100);
+        break;
+      case 'reqHistory':
+        setTimeout(() => injectMockData('resHistory', { listLike: JSON.stringify(MOCK_HISTORY) }), 100);
+        break;
+      case 'searchMusic':
+        setTimeout(() => {
+          injectMockData('resSearchMusic', { searchList: MOCK_SEARCH_RESULTS });
+        }, 1200);
+        break;
+      case 'requestMusicUrl': {
+        const song =
+          [...MOCK_HISTORY, ...MOCK_LIKED, ...MOCK_SEARCH_RESULTS.map(s => ({ ...s, id: s._id }))]
+            .find(s => (s.id || s._id) === data.musicId);
+        setTimeout(() => {
+          injectMockData('musicUrlReceived', {
+            name: data.name,
+            url: `mock_${data.musicId}`,
+            imageUrl: data.imageUrl || '',
+            author: data.author || 'Central',
+          });
+        }, 800);
+        break;
+      }
+      case 'pause':
+      case 'play':
+        // estado já tratado no togglePlayPause localmente
+        break;
+      case 'liked':
+        setTimeout(() => injectMockData('showLikeMusic'), 100);
+        break;
+      case 'remLike':
+        setTimeout(() => injectMockData('remLikeMusic'), 100);
+        break;
+      case 'hideFrame':
+        setVisible(false);
+        break;
+      default:
+        // createPlaylist, deletePlaylist, editPlaylist, addToPlaylist, removeToPlaylist
+        // são operações de estado — no mock apenas recarrega os dados depois
+        break;
+    }
   };
 
   const fetchInitialData = () => {
@@ -137,12 +309,15 @@ const App = () => {
 
   const handleClose = () => {
     setVisible(false);
-    fetch(`https://${GetParentResourceName()}/hideFrame`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    });
+    if (!IS_BROWSER) {
+      fetch(`https://${GetParentResourceName()}/hideFrame`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+    }
   };
+
   const handleSearch = () => {
     if (searchQuery.trim()) {
       setIsSearching(true);
